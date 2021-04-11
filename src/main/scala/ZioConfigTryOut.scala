@@ -4,7 +4,13 @@ import zio.config._, ConfigDescriptor._
 
 object ZioConfigTryOut {
   def main(args: Array[String]): Unit = {
-    val systemEnv: Map[String, String] = sys.env
+    val systemEnv: Map[String, String] =
+      Map(
+        "DATABASE_HOST" -> "host",
+        "PORT" -> "34343",
+        "USER_NAME" -> "bibin",
+        "PASSWORD" -> "****"
+      )
 
     /**
      * Conventional method of getting the config. This will FAILFAST
@@ -53,8 +59,9 @@ object ZioConfigTryOut {
     val configDescriptor: ConfigDescriptor[ApplicationConfig] =
       (string("DATABASE_HOST") |@| int("PORT") |@| string("USER_NAME") |@| string("PASSWORD")) (ApplicationConfig.apply, ApplicationConfig.unapply)
 
-    println(read(configDescriptor))
+    val result: Either[ReadError[String], ApplicationConfig] = read(configDescriptor from ConfigSource.fromMap(systemEnv))
 
+    result.map(config => CoreApp.run(config))
   }
 }
 
