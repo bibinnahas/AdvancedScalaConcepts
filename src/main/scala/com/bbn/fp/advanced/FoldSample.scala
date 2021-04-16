@@ -1,3 +1,5 @@
+package com.bbn.fp.advanced
+
 object FoldSample {
 
   def appendFoo(s: String): String = s + "FOO"

@@ -1,3 +1,5 @@
+package com.bbn.fp.basic
+
 import scala.annotation.tailrec
 
 object SimpleRecursion extends App {

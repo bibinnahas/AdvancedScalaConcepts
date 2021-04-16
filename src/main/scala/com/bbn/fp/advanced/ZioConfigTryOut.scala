@@ -1,6 +1,7 @@
-package playground
+package com.bbn.fp.advanced
 
-import zio.config._, ConfigDescriptor._
+import zio.config._
+import ConfigDescriptor._
 
 object ZioConfigTryOut {
   def main(args: Array[String]): Unit = {
