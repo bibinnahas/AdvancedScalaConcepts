@@ -67,13 +67,19 @@ object FixPointTypes extends App {
   }
 
   def factorialv4: Int => Int = {
-    ((x: Any => (Int => Int)) => x(x))(
+    ((x: Any => (Int => Int)) => x(x)) (
       (x: Any) => almostFactorial(x.asInstanceOf[Any => (Int => Int)](x)) // renames self to x and added lambda notations
     )
   }
 
+  //  generalising the function
+  def makeRecursive(f: (Int => Int) => (Int => Int)) = {
+    ((x: Any => (Int => Int)) => x(x)) (
+      (x: Any) => f(x.asInstanceOf[Any => (Int => Int)](x))
+    )
+  }
 
-
+  def factorialv5 = makeRecursive(almostFactorial) // STACK UNSAFE
 
 
 }
