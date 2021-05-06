@@ -23,7 +23,7 @@ abstract class GenericMyList[+A] {
 
 }
 
-object Empty extends GenericMyList[Nothing] {
+case object Empty extends GenericMyList[Nothing] {
   def head: Nothing = throw new NoSuchElementException
 
   def tail: GenericMyList[Nothing] = throw new NoSuchElementException
@@ -43,7 +43,7 @@ object Empty extends GenericMyList[Nothing] {
   def ++[B >: Nothing](lst: GenericMyList[B]): GenericMyList[B] = lst
 }
 
-class Cons[+A](h: A, t: GenericMyList[A]) extends GenericMyList[A] {
+case class Cons[+A](h: A, t: GenericMyList[A]) extends GenericMyList[A] {
   def head: A = h
 
   def tail: GenericMyList[A] = t
@@ -82,6 +82,7 @@ trait MyTransformer[-A, B] {
 object ListTest extends App {
 
   val listOfIntegers = new Cons(1, new Cons(2, new Cons(3, Empty)))
+  val copyListOfIntegers = new Cons(1, new Cons(2, new Cons(3, Empty)))
   val listOfStrings = new Cons("bibin", new Cons("nahas", new Cons("is awesome", Empty)))
 
   println(listOfIntegers.head)
@@ -97,6 +98,7 @@ object ListTest extends App {
   println(listOfIntegers.flatMap(new MyTransformer[Int, GenericMyList[Int]] {
     override def transform(elem: Int): GenericMyList[Int] = new Cons(elem, new Cons(elem + 1, Empty))
   }))
+  println(copyListOfIntegers == listOfIntegers)
 
 }
 
