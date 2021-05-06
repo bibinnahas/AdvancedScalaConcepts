@@ -1,13 +1,13 @@
 package com.bbn.fp.basic
 
-abstract class MyList {
-  def head: Int
+abstract class GenericMyList[+A] {
+  def head: A
 
-  def tail: MyList
+  def tail: GenericMyList[A]
 
   def isEmpty: Boolean
 
-  def add(elem: Int): MyList
+  def add[B >: A](elem: B): GenericMyList[B]
 
   def printElements: String
 
@@ -15,26 +15,26 @@ abstract class MyList {
 
 }
 
-object Empty extends MyList {
-  def head: Int = throw new NoSuchElementException
+object Empty extends GenericMyList[Nothing] {
+  def head: Nothing = throw new NoSuchElementException
 
-  def tail: MyList = throw new NoSuchElementException
+  def tail: GenericMyList[Nothing] = throw new NoSuchElementException
 
   def isEmpty: Boolean = true
 
-  def add(elem: Int): MyList = new Cons(elem, Empty)
+  def add[B >: Nothing](elem: B): GenericMyList[B] = new Cons(elem, Empty)
 
   def printElements: String = ""
 }
 
-class Cons(h: Int, t: MyList) extends MyList {
-  def head: Int = h
+class Cons[+A](h: A, t: GenericMyList[A]) extends GenericMyList[A] {
+  def head: A = h
 
-  def tail: MyList = t
+  def tail: GenericMyList[A] = t
 
   def isEmpty: Boolean = false
 
-  def add(elem: Int): MyList = new Cons(elem, new Cons(h, t))
+  def add[B >: A](elem: B): GenericMyList[B] = new Cons(elem, new Cons(h, t))
 
   def printElements: String = {
     if (t.isEmpty) "" + h
@@ -44,11 +44,12 @@ class Cons(h: Int, t: MyList) extends MyList {
 }
 
 object ListTest extends App {
-  val list = new Cons(1, new Cons(2, new Cons(3, Empty)))
-  println(list.head)
-  println(list.tail.head)
-  println(list.isEmpty)
-  println(list.add(4).head)
-  println(list.add(4).toString)
+
+  val listOfIntegers = new Cons(1, new Cons(2, new Cons(3, Empty)))
+  val listOfStrings = new Cons("bibin", new Cons("nahas", new Cons("is awesome", Empty)))
+
+  println(listOfIntegers.head)
+  println(listOfStrings.head)
+  println(listOfStrings.add("kunjan").head)
 }
 

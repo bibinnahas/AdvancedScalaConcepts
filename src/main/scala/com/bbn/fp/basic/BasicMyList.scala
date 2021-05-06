@@ -1,13 +1,13 @@
 package com.bbn.fp.basic
 
-abstract class MyList {
+abstract class BasicMyList {
   def head: Int
 
-  def tail: MyList
+  def tail: BasicMyList
 
   def isEmpty: Boolean
 
-  def add(elem: Int): MyList
+  def add(elem: Int): BasicMyList
 
   def printElements: String
 
@@ -15,26 +15,26 @@ abstract class MyList {
 
 }
 
-object Empty extends MyList {
+object BasicListEmpty extends BasicMyList {
   def head: Int = throw new NoSuchElementException
 
-  def tail: MyList = throw new NoSuchElementException
+  def tail: BasicMyList = throw new NoSuchElementException
 
   def isEmpty: Boolean = true
 
-  def add(elem: Int): MyList = new Cons(elem, Empty)
+  def add(elem: Int): BasicMyList = new BasicListCons(elem, BasicListEmpty)
 
   def printElements: String = ""
 }
 
-class Cons(h: Int, t: MyList) extends MyList {
+class BasicListCons(h: Int, t: BasicMyList) extends BasicMyList {
   def head: Int = h
 
-  def tail: MyList = t
+  def tail: BasicMyList = t
 
   def isEmpty: Boolean = false
 
-  def add(elem: Int): MyList = new Cons(elem, new Cons(h, t))
+  def add(elem: Int): BasicMyList = new BasicListCons(elem, new BasicListCons(h, t))
 
   def printElements: String = {
     if (t.isEmpty) "" + h
@@ -43,7 +43,7 @@ class Cons(h: Int, t: MyList) extends MyList {
   }
 }
 
-object ListTest extends App {
+object BasicListTest extends App {
   val list = new Cons(1, new Cons(2, new Cons(3, Empty)))
   println(list.head)
   println(list.tail.head)
