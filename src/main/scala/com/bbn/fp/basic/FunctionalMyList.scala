@@ -1,4 +1,4 @@
-package com.bbn.fp.advanced
+package com.bbn.fp.basic
 
 abstract class FunctionalMyList[+A] {
   def head: A
@@ -23,34 +23,34 @@ abstract class FunctionalMyList[+A] {
 
 }
 
-case object Empty extends FunctionalMyList[Nothing] {
+case object FuncEmpty extends FunctionalMyList[Nothing] {
   def head: Nothing = throw new NoSuchElementException
 
   def tail: FunctionalMyList[Nothing] = throw new NoSuchElementException
 
   def isEmpty: Boolean = true
 
-  def add[B >: Nothing](elem: B): FunctionalMyList[B] = new Cons(elem, Empty)
+  def add[B >: Nothing](elem: B): FunctionalMyList[B] = new FuncCons(elem, FuncEmpty)
 
   def printElements: String = ""
 
-  def map[B](transformer: (Nothing => B)): FunctionalMyList[B] = Empty
+  def map[B](transformer: (Nothing => B)): FunctionalMyList[B] = FuncEmpty
 
-  def flatMap[B](transformer: (Nothing => FunctionalMyList[B])): FunctionalMyList[B] = Empty
+  def flatMap[B](transformer: (Nothing => FunctionalMyList[B])): FunctionalMyList[B] = FuncEmpty
 
-  def filter(predicate: (Nothing => Boolean)): FunctionalMyList[Nothing] = Empty
+  def filter(predicate: (Nothing => Boolean)): FunctionalMyList[Nothing] = FuncEmpty
 
   def ++[B >: Nothing](lst: FunctionalMyList[B]): FunctionalMyList[B] = lst
 }
 
-case class Cons[+A](h: A, t: FunctionalMyList[A]) extends FunctionalMyList[A] {
+case class FuncCons[+A](h: A, t: FunctionalMyList[A]) extends FunctionalMyList[A] {
   def head: A = h
 
   def tail: FunctionalMyList[A] = t
 
   def isEmpty: Boolean = false
 
-  def add[B >: A](elem: B): FunctionalMyList[B] = new Cons(elem, this)
+  def add[B >: A](elem: B): FunctionalMyList[B] = new FuncCons(elem, this)
 
   def printElements: String = {
     if (t.isEmpty) "" + h
@@ -59,16 +59,16 @@ case class Cons[+A](h: A, t: FunctionalMyList[A]) extends FunctionalMyList[A] {
   }
 
   def map[B](transformer: (A => B)): FunctionalMyList[B] =
-    new Cons(transformer(h), t.map(transformer))
+    new FuncCons(transformer(h), t.map(transformer))
 
   def flatMap[B](transformer: (A => FunctionalMyList[B])): FunctionalMyList[B] =
     transformer(h) ++ t.flatMap(transformer)
 
   def filter(predicate: (A => Boolean)): FunctionalMyList[A] =
-    if (predicate(h)) new Cons(h, t.filter(predicate))
+    if (predicate(h)) new FuncCons(h, t.filter(predicate))
     else t.filter(predicate)
 
-  def ++[B >: A](lst: FunctionalMyList[B]): FunctionalMyList[B] = new Cons(h, t ++ lst)
+  def ++[B >: A](lst: FunctionalMyList[B]): FunctionalMyList[B] = new FuncCons(h, t ++ lst)
 }
 
 //trait MyPredicate[-T] {
@@ -81,9 +81,9 @@ case class Cons[+A](h: A, t: FunctionalMyList[A]) extends FunctionalMyList[A] {
 
 object FunctionalListTest extends App {
 
-  val listOfIntegers = new Cons(1, new Cons(2, new Cons(3, Empty)))
-  val copyListOfIntegers = new Cons(1, new Cons(2, new Cons(3, Empty)))
-  val listOfStrings = new Cons("bibin", new Cons("nahas", new Cons("is awesome", Empty)))
+  val listOfIntegers = new FuncCons(1, new FuncCons(2, new FuncCons(3, FuncEmpty)))
+  val copyListOfIntegers = new FuncCons(1, new FuncCons(2, new FuncCons(3, FuncEmpty)))
+  val listOfStrings = new FuncCons("bibin", new FuncCons("nahas", new FuncCons("is awesome", FuncEmpty)))
 
   println(listOfIntegers.head)
   println(listOfStrings.head)
@@ -96,7 +96,7 @@ object FunctionalListTest extends App {
   }))
   println(listOfIntegers ++ listOfStrings)
   println(listOfIntegers.flatMap(new Function1[Int, FunctionalMyList[Int]] {
-    override def apply(elem: Int): FunctionalMyList[Int] = new Cons(elem, new Cons(elem + 1, Empty))
+    override def apply(elem: Int): FunctionalMyList[Int] = new FuncCons(elem, new FuncCons(elem + 1, FuncEmpty))
   }))
   println(copyListOfIntegers == listOfIntegers)
 
