@@ -93,5 +93,22 @@ object LambdaListTest extends App {
   println(listOfIntegers.flatMap((elem: Int) => LambdaCons(elem, LambdaCons(elem + 1, LambdaEmpty))))
   println(copyListOfIntegers == listOfIntegers)
 
+  //  special Function (Int => Func[Int, Int])
+  val specialFunc: (Function1[Int, Function1[Int, Int]]) = new Function1[Int, Function1[Int, Int]] {
+    override def apply(x: Int): Int => Int = new Function1[Int, Int] {
+      override def apply(y: Int): Int = x * y
+    }
+  }
+
+  val specialFuncModified: (Function1[Int, Function1[Int, Int]]) = new Function1[Int, Function1[Int, Int]] {
+    override def apply(x: Int): (Int => Int) = (y: Int) => x * y
+  }
+
+  val specialFuncSimplified: (Function1[Int, Function1[Int, Int]]) = (x: Int) => (y: Int) => x * y
+
+  val specialFuncFurtherSimplified: (Int => Int => Int) = (x: Int) => (y: Int) => x * y // [ ((Int) => (Int => Int)) ] = [ (x: Int) => ((y: Int) => x * y) ].
+  // (Int => Int => Int) is right associative
+
+  println(specialFuncFurtherSimplified(3)(4)) // curried function
 }
 
