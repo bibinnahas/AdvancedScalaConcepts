@@ -23,6 +23,14 @@ abstract class LambdaMyList[+A] {
 
   def ++[B >: A](lst: LambdaMyList[B]): LambdaMyList[B]
 
+  def foreach(f: (A => Unit)): Unit
+
+  def sort(compare: (A, A) => Int): LambdaMyList[A]
+
+  def zipWith[B, C](list: LambdaMyList[B], zip: ((A, B) => C)): LambdaMyList[C]
+
+  def fold[B](start: B, f: ((A, B) => B)): B
+
 }
 
 case object LambdaEmpty extends LambdaMyList[Nothing] {
@@ -43,6 +51,17 @@ case object LambdaEmpty extends LambdaMyList[Nothing] {
   def filter(predicate: (Nothing => Boolean)): LambdaMyList[Nothing] = LambdaEmpty
 
   def ++[B >: Nothing](lst: LambdaMyList[B]): LambdaMyList[B] = lst
+
+  def foreach(f: Nothing => Unit): Unit = ()
+
+  def sort(compare: (Nothing, Nothing) => Int): LambdaMyList[Nothing] = LambdaEmpty
+
+  def zipWith[B, C](list: LambdaMyList[B], zip: (Nothing, B) => C): LambdaMyList[C] = {
+    if (!list.isEmpty) throw new RuntimeException("List lengths differ!")
+    else LambdaEmpty
+  }
+
+  override def fold[B](start: B, f: (Nothing, B) => B): B = start
 }
 
 case class LambdaCons[+A](h: A, t: LambdaMyList[A]) extends LambdaMyList[A] {
@@ -71,6 +90,33 @@ case class LambdaCons[+A](h: A, t: LambdaMyList[A]) extends LambdaMyList[A] {
     else t.filter(predicate)
 
   def ++[B >: A](lst: LambdaMyList[B]): LambdaMyList[B] = new LambdaCons(h, t ++ lst)
+
+  def foreach(f: A => Unit): Unit = {
+    f(h)
+    t.foreach(f)
+  }
+
+  def sort(compare: (A, A) => Int): LambdaMyList[A] = {
+    val sortedTail = t.sort(compare)
+
+    def insert(x: A, sortedList: LambdaMyList[A]): LambdaMyList[A] = {
+      if (sortedList.isEmpty) new LambdaCons(x, LambdaEmpty)
+      else if (compare(x, sortedList.head) <= 0) new LambdaCons(x, sortedList)
+      else new LambdaCons(sortedList.head, insert(x, sortedList.tail))
+    }
+
+    insert(h, sortedTail)
+  }
+
+  def zipWith[B, C](list: LambdaMyList[B], zip: (A, B) => C): LambdaMyList[C] = {
+    if (list.isEmpty) throw new RuntimeException("List lengths differ!")
+    else new LambdaCons(zip(h, list.head), t.zipWith(list.tail, zip))
+  }
+
+  def fold[B](start: B, f: (A, B) => B): B = {
+    val newStart = f(h, start)
+    t.fold(newStart, f)
+  }
 }
 
 object LambdaListTest extends App {
@@ -81,7 +127,7 @@ object LambdaListTest extends App {
    *
    */
   val listOfIntegers = LambdaCons(1, LambdaCons(2, LambdaCons(3, LambdaEmpty)))
-  val copyListOfIntegers = LambdaCons(1, LambdaCons(2, LambdaCons(3, LambdaEmpty)))
+  val copyListOfIntegers = LambdaCons(3, LambdaCons(2, LambdaCons(1, LambdaEmpty)))
   val listOfStrings = LambdaCons("bibin", LambdaCons("nahas", LambdaCons("is awesome", LambdaEmpty)))
 
   println(listOfIntegers.head)
@@ -99,16 +145,18 @@ object LambdaListTest extends App {
       override def apply(y: Int): Int = x * y
     }
   }
-
   val specialFuncModified: (Function1[Int, Function1[Int, Int]]) = new Function1[Int, Function1[Int, Int]] {
     override def apply(x: Int): (Int => Int) = (y: Int) => x * y
   }
-
   val specialFuncSimplified: (Function1[Int, Function1[Int, Int]]) = (x: Int) => (y: Int) => x * y
-
   val specialFuncFurtherSimplified: (Int => Int => Int) = (x: Int) => (y: Int) => x * y // [ ((Int) => (Int => Int)) ] = [ (x: Int) => ((y: Int) => x * y) ].
   // (Int => Int => Int) is right associative
 
   println(specialFuncFurtherSimplified(3)(4)) // curried function
+  println(listOfIntegers.foreach(println))
+  println(listOfIntegers.sort((x, y) => y - x))
+  println(listOfIntegers.zipWith[Int, Int](copyListOfIntegers, _ * _)) //suppply [Int, Int] or do not use MOAR form
+  println(listOfIntegers.fold(1, ((x: Int, y: Int) => x * y)))
+
 }
 
