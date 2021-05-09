@@ -155,7 +155,7 @@ object LambdaListTest extends App {
   println(specialFuncFurtherSimplified(3)(4)) // curried function
   println(listOfIntegers.foreach(println))
   println(listOfIntegers.sort((x, y) => y - x))
-  println(listOfIntegers.zipWith[Int, Int](copyListOfIntegers, _ * _)) //suppply [Int, Int] or do not use MOAR form
+  println(listOfIntegers.zipWith[Int, Int](copyListOfIntegers, _ * _)) //supply [Int, Int] or do not use MOAR form
   println(listOfIntegers.fold(1, ((x: Int, y: Int) => x * y)))
 
 }
