@@ -21,6 +21,13 @@ object factAndPrime extends App {
     isPrimeUntil(n/2)
   }
 
-  println(factorial(100))
+  def nConcatString(a: String, n: Int): String = {
+    def helper(a: String, n: Int, acc: String): String = {
+      if (n == 0) acc
+      else helper(a, n - 1, a + acc)
+    }
+    helper(a, n, "")
+  }
+
 
 }
